@@ -211,7 +211,7 @@ function updateManifest() {
     const lang = localStorage.getItem("lang") || (navigator.language.startsWith("fa") ? "fa" : "en");
     const manifest = document.createElement("link");
     manifest.rel = "manifest";
-    manifest.href = `assets/data/manifest-${lang}.json`;
+    manifest.href = `${BASE_PATH}/assets/data/manifest-${lang}.json`;
     document.head.appendChild(manifest);
     
     console.log(`Manifest updated to: manifest-${lang}.json`);
@@ -1022,7 +1022,7 @@ function updateEventsContainer(container, dateKey) {
  */
 async function loadLanguage(lang) {
     try {
-        const res = await fetch(`/assets/lang/${lang}.json`);
+        const res = await fetch(`${BASE_PATH}/assets/lang/${lang}.json`);
         langData = await res.json();
         localStorage.setItem('lang', lang);
         currentLang = lang;
@@ -1397,7 +1397,7 @@ function initializePWA() {
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/assets/js/service-worker.js')
+            navigator.serviceWorker.register(`${BASE_PATH}/assets/js/service-worker.js`)
                 .then((registration) => {
                     console.log('SW registered: ', registration);
                 })
