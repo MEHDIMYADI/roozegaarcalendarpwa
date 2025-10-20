@@ -160,7 +160,7 @@ const NOTIFICATION_OPTIONS = {
 
 self.addEventListener('push', (event) => {
     console.log('Service Worker: Push received');
-    let notificationData = { title: 'تقویم من', ...NOTIFICATION_OPTIONS };
+    let notificationData = { title: 'Roozegaar Calendar', ...NOTIFICATION_OPTIONS };
 
     if (event.data) {
         try {
