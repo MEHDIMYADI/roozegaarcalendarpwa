@@ -59,6 +59,11 @@ function initializeApp() {
     });
 }
 
+// ======================= BASE URL CONFIG =======================
+const BASE_PATH = window.location.pathname.includes('/roozegaarcalendarpwa') 
+    ? '/roozegaarcalendarpwa' 
+    : '';
+
 // ======================= STATE MANAGEMENT =======================
 let events = JSON.parse(localStorage.getItem('calendarEvents')) || {};
 let currentCalendar = localStorage.getItem('calendarType') || 'persian';
@@ -116,10 +121,10 @@ async function loadAllComponents() {
 	const components = [];
 
 	if (document.getElementById('header'))
-		components.push({ id: 'header', url: '../../assets/components/header.html' });
+		components.push({ id: 'header', url: `${BASE_PATH}/assets/components/header.html` });
 
 	if (document.getElementById('footer')) 
-		components.push({ id: 'footer', url: '../../assets/components/footer.html' });
+		components.push({ id: 'footer', url: `${BASE_PATH}/assets/components/footer.html` });
 	
 	for (const c of components) {
 		await loadComponent(c.id, c.url);
