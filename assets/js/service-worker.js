@@ -1,6 +1,6 @@
 // ======================= BASE PATH CONFIG =======================
-const BASE_PATH = window.location.pathname.includes('/roozegaarcalendarpwa') 
-    ? '/roozegaarcalendarpwa' 
+const BASE_PATH = window.location.pathname.includes('/roozegaar-calendar') 
+    ? '/roozegaar-calendar' 
     : '';
 
 // ======================= SERVICE WORKER CONFIGURATION =======================
