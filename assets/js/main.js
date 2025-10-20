@@ -71,9 +71,7 @@ function initializeApp() {
 }
 
 // ======================= BASE URL CONFIG =======================
-const BASE_PATH = window.location.pathname.startsWith('/roozegaar-calendar') 
-    ? '/roozegaar-calendar' 
-    : '';
+const BASE_PATH = `${window.location.origin}/roozegaar-calendar`;
 
 // ======================= STATE MANAGEMENT =======================
 let events = JSON.parse(localStorage.getItem('calendarEvents')) || {};
