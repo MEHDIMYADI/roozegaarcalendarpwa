@@ -393,7 +393,12 @@ function renderDays() {
 function renderEmptyDays(count) {
     for (let i = 0; i < count; i++) {
         const emptyDay = document.createElement('div');
-        emptyDay.classList.add('day', 'other-month');
+        
+		emptyDay.classList.add('day', 'empty-day');
+        emptyDay.style.pointerEvents = 'none';
+        emptyDay.style.cursor = 'default';
+        emptyDay.style.opacity = '0.4';
+        
         daysGrid.appendChild(emptyDay);
     }
 }
