@@ -2,7 +2,7 @@
   "name": "Roozegaar Calendar",
   "short_name": "Roozegaar Calendar",
   "description": "A Persian and Gregorian bilingual calendar with event management features",
-  "start_url": "/",
+  "start_url": "/roozegaar-calendar/",
   "display": "standalone",
   "background_color": "#f5f5f5",
   "theme_color": "#4a6fa5",
