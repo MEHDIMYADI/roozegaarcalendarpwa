@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title id="pageTitle"></title>
+</head>
+<body class="offline-page">
+    <div class="offline-container">
+        <div class="icon">📶</div>
+        <h1 id="offlineTitle"></h1>
+        <p id="offlineMessage"></p>
+        <p id="offlineHint"></p>
+        <button id="backToCalendar" onclick="window.location.href='/'"></button>
+    </div>
+
+    <script>
+        const currentLang = localStorage.getItem('lang') || 'fa';
+        
+        // Restore theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        
+        async function loadOfflineTranslations() {
+            try {
+                const response = await fetch(`/assets/lang/${currentLang}.json`);
+                const langData = await response.json();
+                
+                document.getElementById('pageTitle').textContent = langData.ui.noInternet;
+                document.getElementById('offlineTitle').textContent = langData.ui.noInternet;
+                document.getElementById('offlineMessage').textContent = langData.ui.checkConnection;
+                document.getElementById('offlineHint').textContent = langData.ui.viewOffline;
+                document.getElementById('backToCalendar').textContent = langData.ui.backToCalendar;
+                
+                document.documentElement.setAttribute('dir', currentLang === 'fa' ? 'rtl' : 'ltr');
+                document.documentElement.setAttribute('lang', currentLang);
+                
+            } catch (error) {
+                console.error('Error loading translations:', error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadOfflineTranslations);
+    </script>
+</body>
+</html>
