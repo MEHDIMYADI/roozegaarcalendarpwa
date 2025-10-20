@@ -497,16 +497,52 @@ function addEventIndicator(dayElement, dateKey) {
  * @param {number} day - Day
  */
 function setupDayEventListeners(dayElement, year, month, day) {
-    // Long press for event creation
-    dayElement.addEventListener('mousedown', (e) => startLongPress(e, year, month, day));
-    dayElement.addEventListener('touchstart', (e) => startLongPress(e, year, month, day));
+    // Prevent these listeners from applying to empty days
+    if (dayElement.classList.contains('empty-day')) {
+        return;
+    }
 
-    dayElement.addEventListener('mouseup', cancelLongPress);
-    dayElement.addEventListener('mouseleave', cancelLongPress);
-    dayElement.addEventListener('touchend', cancelLongPress);
+    let longPressTimer;
+    const longPressDuration = 500;
 
-    // Click for selection
-    dayElement.addEventListener('click', () => handleDayClick(dayElement, year, month, day));
+    // Touch/click start function
+    const startPress = (e) => {
+      
+        // Prevent default behavior on touch
+        if (e.type === 'touchstart') {
+            e.preventDefault();
+        }
+        
+        longPressTimer = setTimeout(() => {
+            openEventModal(year, month, day);
+        }, longPressDuration);
+    };
+
+    // End touch/click function
+    const endPress = (e) => {
+        clearTimeout(longPressTimer);
+        
+        // If the touch was short, act as a click
+        if (e.type === 'touchend' || e.type === 'click') {
+            const touch = e.type === 'touchend' ? e.changedTouches[0] : null;
+            handleDayClick(dayElement, year, month, day, touch);
+        }
+    };
+    
+    // Cancel touch/click
+    const cancelPress = () => {
+        clearTimeout(longPressTimer);
+    };
+
+    // Add event listeners for mobile and desktop
+    dayElement.addEventListener('touchstart', startPress, { passive: false });
+    dayElement.addEventListener('touchend', endPress);
+    dayElement.addEventListener('touchcancel', cancelPress);
+    
+    dayElement.addEventListener('mousedown', startPress);
+    dayElement.addEventListener('mouseup', endPress);
+    dayElement.addEventListener('mouseleave', cancelPress);
+    dayElement.addEventListener('click', endPress);
 }
 
 // ======================= CALENDAR NAVIGATION =======================
