@@ -1,33 +1,37 @@
+// ======================= BASE PATH CONFIG =======================
+const BASE_PATH = window.location.pathname.includes('/roozegaarcalendarpwa') 
+    ? '/roozegaarcalendarpwa' 
+    : '';
+
 // ======================= SERVICE WORKER CONFIGURATION =======================
-const CACHE_NAME = 'jalali-calendar-v1.0.1';
+const CACHE_NAME = 'roozegaar-calendar-v1.0.0';
 const FONT_CACHE = 'fontawesome-cache-v1';
-const OFFLINE_PAGE = '/offline.html';
+const OFFLINE_PAGE = `${BASE_PATH}/offline.html`;
 
 /**
  * Array of URLs to cache during installation
  */
 const urlsToCache = [
-    '/',
-    '/',
-    '/index.html',
-    '/offline.html',
-    '/assets/components/header.html',
-    '/assets/components/footer.html',
-    '/assets/css/style.css',
-    '/assets/js/main.js',
-    '/assets/js/jalaali.js',
-    '/assets/data/manifest-en.json',
-    '/assets/data/manifest-fa.json',
-    '/assets/lang/fa.json',
-    '/assets/lang/en.json',
-    '/assets/images/icons/icon-72x72.png',
-    '/assets/images/icons/icon-96x96.png',
-    '/assets/images/icons/icon-128x128.png',
-    '/assets/images/icons/icon-144x144.png',
-    '/assets/images/icons/icon-152x152.png',
-    '/assets/images/icons/icon-192x192.png',
-    '/assets/images/icons/icon-384x384.png',
-    '/assets/images/icons/icon-512x512.png'
+    `${BASE_PATH}/`,
+    `${BASE_PATH}/index.html`,
+    `${BASE_PATH}/offline.html`,
+    `${BASE_PATH}/assets/components/header.html`,
+    `${BASE_PATH}/assets/components/footer.html`,
+    `${BASE_PATH}/assets/css/style.css`,
+    `${BASE_PATH}/assets/js/main.js`,
+    `${BASE_PATH}/assets/js/jalaali.js`,
+    `${BASE_PATH}/assets/data/manifest-en.json`,
+    `${BASE_PATH}/assets/data/manifest-fa.json`,
+    `${BASE_PATH}/assets/lang/fa.json`,
+    `${BASE_PATH}/assets/lang/en.json`,
+    `${BASE_PATH}/assets/images/icons/icon-72x72.png`,
+    `${BASE_PATH}/assets/images/icons/icon-96x96.png`,
+    `${BASE_PATH}/assets/images/icons/icon-128x128.png`,
+    `${BASE_PATH}/assets/images/icons/icon-144x144.png`,
+    `${BASE_PATH}/assets/images/icons/icon-152x152.png`,
+    `${BASE_PATH}/assets/images/icons/icon-192x192.png`,
+    `${BASE_PATH}/assets/images/icons/icon-384x384.png`,
+    `${BASE_PATH}/assets/images/icons/icon-512x512.png`
 ];
 
 // ======================= INSTALL EVENT HANDLER =======================
@@ -146,8 +150,8 @@ async function handleOfflineFallback(request) {
 // ======================= PUSH NOTIFICATION HANDLERS =======================
 const NOTIFICATION_OPTIONS = {
     body: 'یادآوری رویداد جدید',
-    icon: 'icons/icon-192x192.png',
-    badge: 'icons/icon-72x72.png',
+    icon: `${BASE_PATH}/assets/images/icons/icon-192x192.png`,
+    badge: `${BASE_PATH}/assets/images/icons/icon-72x72.png`,
     dir: 'rtl',
     lang: 'fa',
     vibrate: [200, 100, 200],
@@ -175,9 +179,9 @@ self.addEventListener('notificationclick', (event) => {
     event.waitUntil(
         (async () => {
             const allClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-            const appClient = allClients.find(c => c.url.includes('/') && 'focus' in c);
+            const appClient = allClients.find(c => c.url.includes(BASE_PATH) && 'focus' in c);
             if (appClient) return appClient.focus();
-            return self.clients.openWindow('/');
+            return self.clients.openWindow(`${BASE_PATH}/`);
         })()
     );
 });
