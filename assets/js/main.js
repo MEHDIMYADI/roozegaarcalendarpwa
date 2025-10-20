@@ -71,7 +71,7 @@ function initializeApp() {
 }
 
 // ======================= BASE URL CONFIG =======================
-const BASE_PATH = window.location.pathname.includes('/roozegaar-calendar') 
+const BASE_PATH = window.location.pathname.startsWith('/roozegaar-calendar') 
     ? '/roozegaar-calendar' 
     : '';
 
