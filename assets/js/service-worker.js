@@ -10,9 +10,7 @@
  */
 
 // ======================= BASE PATH CONFIG =======================
-const BASE_PATH = window.location.pathname.includes('/roozegaar-calendar') 
-    ? '/roozegaar-calendar' 
-    : '';
+const BASE_PATH = `${self.location.origin}/roozegaar-calendar`;
 
 // ======================= SERVICE WORKER CONFIGURATION =======================
 const CACHE_NAME = 'roozegaar-calendar-v1.0.0';
