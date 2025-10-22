@@ -1,7 +1,7 @@
 {
   "ui": {
-    "logo": "Roozegaar Calendar",    
-    "home": "Home",
+    "logo": "Roozegaar Calendar", 
+    "slogan": "YESTERDAY IS HISTORY, TOMORROW IS A MYSTERY, TODAY IS A GIFT!",
     "calendar": "Calendar",
     "settings": "Settings",
     "about": "About",
@@ -49,27 +49,218 @@
     "homePage": "Home Page",
     "roozegaar": "Roozegaar",
     "roozegaarCalendar": "Roozegaar Calendar",
-    "help": "Help",
     "supportEmail": "Support Email",
     "privacyPolicy": "Privacy Policy",
     "termsConditions": "Terms & Conditions",
-    "faq": "FAQ",
-    "appVersions": "App Versions",
-    "reportIssue": "Report Issue",
+    "faq": "Frequently Asked Questions",
     "copyright": "All rights reserved for Roozegaar Calendar",
     "facebook": "Facebook",
     "twitter": "Twitter",
     "instagram": "Instagram",
     "linkedin": "LinkedIn",
     "aboutDescription": "Roozegaar Calendar - A complete tool for time and event management in both Persian and English",
-    "supportEmailAddress": "mahdi2006d@gmail.com"
+    "supportEmailAddress": "mahdi2006d@gmail.com",
+    "resetSettings": "Reset Settings",
+    "resetConfirm": "Are you sure you want to reset all settings?"
   },
-  "months": {
-    "fa": ["Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar", "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"],
-    "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    "months": {
+        "fa": ["Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar", "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"],
+        "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    },
+    "weekdays": {
+        "fa": ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"],
+        "en": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    },
+    "privacy": {
+        "title": "Privacy and Terms of Use",
+        "sections": [
+            {
+                "title": "Information Collection",
+                "content": "Roozegaar Calendar does not collect your personal information. All events and data you create are stored only on your device."
+            },
+            {
+                "title": "Data Storage",
+                "content": "All information, including events, settings, and dates, is stored locally in your browser and is not sent to any external servers."
+            },
+            {
+                "title": "Privacy",
+                "content": "We respect your privacy. This application does not track or store any information, and all operations are performed offline."
+            },
+            {
+                "title": "Terms of Use",
+                "content": "By using this application, you agree to use it legally, and you are responsible for the content you create."
+            }
+        ]
+    },
+    "terms": {
+    "title": "Terms & Conditions",
+    "sections": [
+            {
+                "title": "Use of the Application",
+                "content": "By using Roozegaar Calendar, you agree to use the application responsibly and only for lawful purposes."
+            },
+            {
+                "title": "User Responsibility",
+                "content": "You are solely responsible for the events, data, and content you create or manage within the app."
+            },
+            {
+                "title": "Intellectual Property",
+                "content": "All designs, logos, and features of the Roozegaar Calendar are the property of their respective owners and may not be used without permission."
+            },
+            {
+                "title": "Limitation of Liability",
+                "content": "Roozegaar Calendar is provided 'as is' without any warranties. The developers are not responsible for any data loss or damages resulting from the use of the app."
+            },
+            {
+                "title": "Changes to Terms",
+                "content": "These terms may be updated from time to time. Continued use of the application after updates means you accept the new terms."
+            }
+        ]
+    },
+    "faq": {
+    "title": "Frequently Asked Questions",
+    "description": "Find answers to common questions about Roozegaar Calendar",
+    "categories": {
+      "general": {
+        "title": "General Questions",
+        "questions": [
+          {
+            "question": "What is Roozegaar Calendar?",
+            "answer": "Roozegaar Calendar is a bilingual (Persian & Gregorian) calendar application with event management capabilities. It allows you to view both calendar systems simultaneously and manage your events efficiently."
+          },
+          {
+            "question": "Is the application free?",
+            "answer": "Yes, Roozegaar Calendar is completely free to use with no hidden costs or subscription fees."
+          },
+          {
+            "question": "Do I need an internet connection to use the app?",
+            "answer": "No, the application works completely offline. All your data is stored locally on your device."
+          },
+          {
+            "question": "Which browsers are supported?",
+            "answer": "The application works on all modern browsers including Chrome, Firefox, Safari, Edge, and Opera."
+          }
+        ]
+      },
+      "features": {
+        "title": "Features & Usage",
+        "questions": [
+          {
+            "question": "How do I add an event?",
+            "answer": "Press and hold on any date in the calendar for about half a second, then the event addition window will open. Enter the event title and description and save it."
+          },
+          {
+            "question": "How do I switch between Persian and Gregorian calendars?",
+            "answer": "You can change the main calendar from the settings section. Go to Settings → Main Calendar and select your preferred calendar system."
+          },
+          {
+            "question": "Can I see both calendars at the same time?",
+            "answer": "Yes, when the secondary calendar display is enabled, you can see both dates simultaneously for each day."
+          },
+          {
+            "question": "How do I delete an event?",
+            "answer": "Click on the date containing the event, then in the events list, click the delete button next to the desired event."
+          },
+          {
+            "question": "Can I export my events?",
+            "answer": "Currently, export feature is not available, but all your events are safely stored in your browser's local storage."
+          }
+        ]
+      },
+      "technical": {
+        "title": "Technical Issues",
+        "questions": [
+          {
+            "question": "I lost my events after updating the browser. What should I do?",
+            "answer": "Events are stored in your browser's local storage. If you clear browser data or use private browsing, events may be lost. We recommend regularly backing up important events."
+          },
+          {
+            "question": "The calendar doesn't display correctly. What should I do?",
+            "answer": "Try refreshing the page (F5). If the problem persists, clear your browser cache and reload the application."
+          },
+          {
+            "question": "Can I install the app on my phone?",
+            "answer": "Yes! Roozegaar Calendar is a PWA (Progressive Web App). You can install it on your phone by clicking the install button in your browser."
+          },
+          {
+            "question": "Is my data synced between devices?",
+            "answer": "No, data is stored locally on each device. We're working on cloud sync feature for future versions."
+          }
+        ]
+      },
+      "privacy": {
+        "title": "Privacy & Security",
+        "questions": [
+          {
+            "question": "Is my data secure?",
+            "answer": "Yes, all your data remains on your device and is not sent to any servers. We respect your privacy completely."
+          },
+          {
+            "question": "Do you collect personal information?",
+            "answer": "No, we do not collect any personal information. The application works entirely locally on your device."
+          },
+          {
+            "question": "Can I use the app without creating an account?",
+            "answer": "Yes, no account or registration is required to use Roozegaar Calendar."
+          }
+        ]
+      }
+    },
+    "searchPlaceholder": "Search questions...",
+    "noResults": "No results found for your search",
+    "contactSupport": "Still have questions?",
+    "contactLink": "Contact support"
   },
-  "weekdays": {
-    "fa": ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"],
-    "en": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-  }
+  "about": {
+    "title": "About Me",
+    "hero": {
+      "title": "Mehdi Dimyadi",
+      "subtitle": "Independent Developer & Creator of Roozegaar Calendar"
+    },
+    "sections": {
+      "aboutMe": {
+        "title": "👨‍💻 About Me",
+        "content": "I'm Mehdi Dimyadi, an independent developer passionate about creating practical and open-source tools. With a focus on great user experience and clean code, I build projects that simplify digital life."
+      },
+      "projects": {
+        "title": "🚀 Projects",
+        "content": "Some of my active projects:"
+      },
+      "skills": {
+        "title": "🛠️ Skills",
+        "content": "My technical expertise includes:"
+      },
+      "contact": {
+        "title": "📞 Contact Me",
+        "content": "If you have questions, suggestions, or collaboration ideas, I'd be happy to connect with you."
+      }
+    },
+    "projects": [
+      {
+        "title": "Roozegaar Calendar",
+        "description": "A bilingual Persian/English calendar with event management capabilities",
+        "url": "https://roozegaar.ir/"
+      },
+      {
+        "title": "Personal Website",
+        "description": "Portfolio and technical articles about web development",
+        "url": "https://dimyadi.ir/"
+      }
+    ],
+    "skills": [
+      "JavaScript",
+      "HTML/CSS",
+      "React",
+      "Node.js",
+      "PWA",
+      "UI/UX Design",
+      "Git",
+      "Responsive Design"
+    ],
+    "links": {
+      "github": "GitHub Profile",
+      "website": "Personal Website",
+      "roozegaar": "Roozegaar Project"
+    }
+  }    
 }

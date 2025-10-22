@@ -1,0 +1,63 @@
+<!--
+  Copyright (c) 2025 Mehdi Dimyadi (https://github.com/MEHDIMYADI)
+  Project: Roozegaar Calendar (https://dimyadi.ir/roozegaar-calendar/)
+
+  If you use or get inspiration from this project,
+  please kindly mention my name or this project in your work.
+  It took a lot of effort to build, and I’d really appreciate your acknowledgment.
+
+  Licensed under no specific open-source license — all rights reserved unless stated otherwise.
+-->
+
+<div class="settings-page">
+    <div class="page-header">
+        <h2 id="settings"></h2>
+    </div>
+    
+    <div class="settings-content">
+        <!-- Theme Selection -->
+        <div class="setting-group">
+            <label for="themeSelect" data-lang-key="theme">تم</label>
+            <select id="themeSelect" class="setting-select">
+                <option value="light" data-lang-key="light">روشن</option>
+                <option value="dark" data-lang-key="dark">تیره</option>
+            </select>
+        </div>
+
+        <!-- Language Selection -->
+        <div class="setting-group">
+            <label for="langSelect" data-lang-key="langToggle">زبان</label>
+            <select id="langSelect" class="setting-select">
+                <option value="fa" data-lang-key="persian">فارسی</option>
+                <option value="en" data-lang-key="english">English</option>
+            </select>
+        </div>
+
+        <!-- Calendar Type Selection -->
+        <div class="setting-group">
+            <label for="calendarTypeSelect" data-lang-key="settingsCalendar">تقویم اصلی</label>
+            <select id="calendarTypeSelect" class="setting-select">
+                <option value="persian" data-lang-key="persian">شمسی</option>
+                <option value="gregorian" data-lang-key="gregorian">میلادی</option>
+            </select>
+        </div>
+        
+        <!-- Show Secondary Calendar -->
+        <div class="setting-group toggle-group">
+            <label for="secondaryCalendarToggle" data-lang-key="showSecondaryCalendar">
+                نمایش تقویم دوم
+            </label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="secondaryCalendarToggle" class="setting-toggle">
+                <label for="secondaryCalendarToggle" class="toggle-slider"></label>
+            </div>
+        </div>
+
+        <!-- Reset Settings -->
+        <div class="setting-group">
+            <button id="resetSettings" class="btn btn-warning" data-lang-key="resetSettings">
+                بازنشانی تنظیمات
+            </button>
+        </div>
+    </div>
+</div>

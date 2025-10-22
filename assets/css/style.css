@@ -24,6 +24,7 @@
     --hover-color: #f0f0f0;
     --footer-bg: #fff;
     --footer-text: #333;
+    --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] {
@@ -39,6 +40,7 @@
     --hover-color: #3a3a3a;
     --footer-bg: #2d2d2d;
     --footer-text: #f0f0f0;
+    --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* ======================= BASE STYLES ======================= */
@@ -353,6 +355,645 @@ nav {
     opacity: 0.7;
     font-size: 1.1rem;
     color: var(--text-color);
+}
+
+/* ======================= SETTINGS STYLES ======================= */
+
+.settings-page {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-header h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.settings-content {
+    background-color: var(--day-bg);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.setting-group {
+    margin-bottom: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setting-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.setting-group label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.setting-select {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.setting-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn-warning {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    width: 100%;
+}
+
+.btn-warning:hover {
+    background: #ff5252;
+}
+
+/* ======================= PRIVACY POLICY PAGE STYLES ======================= */
+.privacy-page {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.privacy-container {
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    background-color: var(--day-bg);
+    border-radius: 10px;
+}
+
+.privacy-title {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.privacy-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.privacy-section-title {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.privacy-section-content {
+    color: var(--text-color);
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.privacy-back-button-container {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.privacy-back-button {
+    min-width: 150px;
+}
+
+/* RTL/LTR support for privacy page */
+[dir="rtl"] .privacy-section {
+    border-left: none;
+    border-right: 4px solid var(--primary-color);
+}
+
+[dir="ltr"] .privacy-section {
+    border-left: 4px solid var(--primary-color);
+    border-right: none;
+}
+
+/* ======================= TERMS PAGE STYLES ======================= */
+.terms-page {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.terms-container {
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    background-color: var(--day-bg);
+    border-radius: 10px;
+}
+
+.terms-title {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.terms-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.terms-section-title {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.terms-section-content {
+    color: var(--text-color);
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.terms-back-button-container {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.terms-back-button {
+    min-width: 150px;
+}
+
+/* RTL/LTR support for terms page */
+[dir="rtl"] .terms-section {
+    border-left: none;
+    border-right: 4px solid var(--primary-color);
+}
+
+[dir="ltr"] .terms-section {
+    border-left: 4px solid var(--primary-color);
+    border-right: none;
+}
+
+/* ======================= FAQ Page Styles ======================= */
+.faq-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+}
+
+.faq-description {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+}
+
+.faq-search {
+    position: relative;
+    margin-bottom: 30px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.faq-search input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.faq-search input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+}
+
+.faq-search .fa-search {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.faq-category {
+    margin-bottom: 30px;
+    background: var(--day-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.faq-category-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.faq-category-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.faq-category-icon {
+    transition: transform 0.3s ease;
+}
+
+.faq-category.open .faq-category-icon {
+    transform: rotate(180deg);
+}
+
+.faq-questions {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.faq-category.open .faq-questions {
+    max-height: 2000px;
+}
+
+.faq-question {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.faq-question:last-child {
+    border-bottom: none;
+}
+
+.faq-category-toggle.rotated,
+.faq-question-toggle.rotated {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+
+.faq-question-header {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-color);
+    transition: background-color 0.3s ease;
+}
+
+.faq-question-header:hover {
+    background: var(--hover-color);
+}
+
+.faq-question-text {
+    margin: 0;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.faq-question-icon {
+    color: var(--primary-color);
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+
+.faq-question.open .faq-question-icon {
+    transform: rotate(180deg);
+}
+
+.faq-category-content {
+    display: none;
+    padding: 10px 0;
+}
+
+.faq-category-content.expanded {
+    display: block;
+}
+
+.faq-answer {
+    display: none;
+    padding: 10px 20px;
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+}
+
+.faq-answer.expanded {
+    display: block;
+}
+
+.faq-question.open .faq-answer {
+    max-height: 500px;
+    padding: 0 20px 15px 20px;
+}
+
+.faq-answer-content {
+    padding: 15px 0;
+    color: var(--text-color);
+    line-height: 1.6;
+    border-top: 1px solid var(--border-color);
+}
+
+.faq-contact {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    background: var(--bg-color);
+    border-radius: 10px;
+    border: 2px dashed var(--border-color);
+}
+
+.faq-contact a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.faq-contact a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.search-highlight {
+    background-color: yellow;
+    font-weight: bold;
+}
+
+.faq-no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+    display: none;
+}
+
+.faq-no-results.show {
+    display: block;
+}
+
+/* ======================= ABOUT PAGE STYLES ======================= */
+.about-page {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.about-container {
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    background-color: var(--day-bg);
+    border-radius: 10px;
+}
+
+.about-title {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.about-hero {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 12px;
+    color: white;
+}
+
+.about-hero-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.about-hero-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+}
+
+.about-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.about-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.about-profile-info {
+    text-align: center;
+}
+
+.about-profile-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.about-profile-role {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.about-social-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.about-social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.about-social-link:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.about-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.about-section-title {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.about-section-content {
+    color: var(--text-color);
+    line-height: 1.7;
+    text-align: justify;
+}
+
+.about-projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.about-project-card {
+    background: var(--day-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.about-project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.about-project-title {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.about-project-description {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.about-project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.about-project-link:hover {
+    color: var(--secondary-color);
+    gap: 0.7rem;
+}
+
+.about-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.about-skill {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.about-back-button-container {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.about-back-button {
+    min-width: 150px;
+}
+
+/* RTL/LTR support for about page */
+[dir="rtl"] .about-section {
+    border-left: none;
+    border-right: 4px solid var(--primary-color);
+}
+
+[dir="ltr"] .about-section {
+    border-left: 4px solid var(--primary-color);
+    border-right: none;
+}
+
+[dir="rtl"] .about-project-link {
+    flex-direction: row-reverse;
+}
+
+[dir="ltr"] .about-project-link {
+    flex-direction: row;
 }
 
 /* ======================= MODAL STYLES ======================= */
@@ -948,6 +1589,14 @@ body.offline-page main:not(.offline-container) {
         flex-shrink: 0;
     }
     
+    .settings-page {
+        padding: 15px;
+    }
+    
+    .settings-content {
+        padding: 20px;
+    }
+    
     .footer {
         padding: 30px 0 15px;
         margin-top: 30px;
@@ -1122,6 +1771,78 @@ body.offline-page main:not(.offline-container) {
         font-size: 0.9rem;
         width: 100%;
     }
+    
+    .privacy-page {
+        padding: 1rem;
+    }
+    
+    .privacy-container {
+        padding: 1.5rem;
+    }
+    
+    .privacy-title {
+        font-size: 1.5rem;
+    }
+    
+    .privacy-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }   
+    
+    .faq-page {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .faq-category-header {
+        padding: 12px 15px;
+    }
+    
+    .faq-question-header {
+        padding: 12px 15px;
+    }
+    
+    .faq-answer {
+        padding: 0 15px;
+    }
+    
+    .faq-question.open .faq-answer {
+        padding: 0 15px 12px 15px;
+    }  
+    
+    .about-page {
+        padding: 1rem;
+    }
+    
+    .about-container {
+        padding: 1.5rem;
+    }
+    
+    .about-hero {
+        padding: 1.5rem;
+    }
+    
+    .about-hero-title {
+        font-size: 1.6rem;
+    }
+    
+    .about-hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .about-profile {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .about-avatar {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .about-projects {
+        grid-template-columns: 1fr;
+    }    
 }
 
 /* ======================= RESPONSIVE STYLES ======================= */

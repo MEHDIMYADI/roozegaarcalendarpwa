@@ -1,0 +1,67 @@
+ <!--
+  Copyright (c) 2025 Mehdi Dimyadi (https://github.com/MEHDIMYADI)
+  Project: Roozegaar Calendar (https://dimyadi.ir/roozegaar-calendar/)
+
+  If you use or get inspiration from this project,
+  please kindly mention my name or this project in your work.
+  It took a lot of effort to build, and I’d really appreciate your acknowledgment.
+
+  Licensed under no specific open-source license — all rights reserved unless stated otherwise.
+-->
+
+<!-- ======================= CALENDAR SECTION ======================= -->
+    <section aria-labelledby="currentMonthYear">
+        <div class="calendar-container">
+            <!-- Calendar Header with Navigation -->
+            <div class="calendar-header">
+              <h2 id="currentMonthYear" aria-live="polite"></h2>                    
+              <div class="calendar-nav" role="toolbar" aria-label="کنترل‌های تقویم">
+                <button id="prevYear" title="سال قبل"><i class="fa-solid fa-angles-left"></i></button>
+                <button id="prevMonth" title="ماه قبل"><i class="fa-solid fa-chevron-left"></i></button>
+                <button id="todayBtn" title="برو به امروز"><i class="fa-solid fa-circle-dot"></i></button>
+                <button id="nextMonth" title="ماه بعد"><i class="fa-solid fa-chevron-right"></i></button>
+                <button id="nextYear" title="سال بعد"><i class="fa-solid fa-angles-right"></i></button>
+              </div>
+            </div>
+
+            <!-- Calendar Body -->
+            <div class="calendar-body">
+                <!-- Weekdays Header -->
+                <div class="weekdays" id="weekdays" role="rowgroup">
+                    <!-- Weekdays will be populated by JavaScript -->
+                </div>
+                
+                <!-- Days Grid -->
+                <div class="days-grid" id="daysGrid" role="grid" aria-labelledby="currentMonthYear">
+                    <!-- Days will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================= DUAL CALENDAR CARDS ======================= -->
+    <section class="dual-calendar-cards" aria-label="نمایش تاریخ فعلی">
+        <!-- Persian Calendar Card -->
+        <div class="calendar-card" id="persianCard" role="complementary" aria-label="تاریخ شمسی">
+            <div class="day-large" id="persianDay" aria-live="polite">15</div>
+            <div class="month-name" id="persianMonth" aria-live="polite">مهر</div>
+            <div class="full-date" id="persianFullDate" aria-live="polite">1404/07/15</div>
+        </div>
+        
+        <!-- Gregorian Calendar Card -->
+        <div class="calendar-card" id="gregorianCard" role="complementary" aria-label="تاریخ میلادی">
+            <div class="day-large" id="gregorianDay" aria-live="polite">7</div>
+            <div class="month-name" id="gregorianMonth" aria-live="polite">October</div>
+            <div class="full-date" id="gregorianFullDate" aria-live="polite">2025/10/07</div>
+        </div>
+    </section>
+
+    <!-- ======================= DAILY EVENTS SECTION ======================= -->
+    <section aria-labelledby="dailyEventsHeading">
+        <div class="wide-calendar-card" id="dailyEventsCard">
+            <h3 id="dailyEventsHeading" class="sr-only">رویدادهای روز</h3>
+            <div class="events-container" id="dailyEventsContainer" aria-live="polite">
+                <!-- Daily events will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>

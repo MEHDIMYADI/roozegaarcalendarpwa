@@ -15,59 +15,81 @@
  */
 function initializeApp() {
     document.addEventListener('DOMContentLoaded', async () => {
+        console.log('🚀 App initialization started...');
         
-        // Initialize components
-        await loadAllComponents() 
-        
-        // Initialize state
-        currentLang = localStorage.getItem('lang') || 'fa';
-        currentCalendar = localStorage.getItem('calendarType') || 'persian';
-        
-        // Load language and setup
-        await loadLanguage(currentLang);
-        document.body.setAttribute('data-calendar', currentCalendar);
-        
-        // Initialize manifest based on language
-        updateManifest();
-        
-        // Restore calendar state
-        if (currentCalendar === 'persian') {
-            currentPersianDate = gregorianToPersian(currentDate);
-        } else {
-            currentDate = persianToGregorian(currentPersianDate);
-        }
-        
-        // Restore theme
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
+        try {
+            // Initialize components
+            console.log('📦 Loading components...');
+            await loadAllComponents();
+            
+            // Wait a bit more for DOM to be fully ready
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Initialize state
+            currentLang = localStorage.getItem('lang') || 'fa';
+            currentCalendar = localStorage.getItem('calendarType') || 'persian';
+            
+            // Load language and setup
+            console.log('🌐 Loading language...');
+            await loadLanguage(currentLang);
+            document.body.setAttribute('data-calendar', currentCalendar);
+            
+            // Initialize manifest based on language
+            updateManifest();
+            
+            // Restore calendar state
+            if (currentCalendar === 'persian') {
+                currentPersianDate = gregorianToPersian(currentDate);
+            } else {
+                currentDate = persianToGregorian(currentPersianDate);
+            }
+            
+            // Restore theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
 
-        // Setup all functionality
-        setupEventListeners();
-        initializePWA();
-        registerServiceWorker();
-        initializeSettingsModal();
-        setupSettingsHandlers();
+            // Setup all functionality
+            console.log('⚙️ Setting up functionality...');
+            setupEventListeners();
+            initializePWA();
+            registerServiceWorker();
+            initializeSettingsModal();
+            setupSettingsHandlers();
 
-        // Initialize calendar
-        initCalendar();
-        
-        // Show today's events
-        const todayKey = currentCalendar === 'persian' 
-            ? getDateKey(currentPersianDate.year, currentPersianDate.month, currentPersianDate.day)
-            : getDateKey(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+            // Initialize calendar
+            console.log('📅 Initializing calendar...');
+            initCalendar();
+            
+            // Show today's events
+            const todayKey = currentCalendar === 'persian' 
+                ? getDateKey(currentPersianDate.year, currentPersianDate.month, currentPersianDate.day)
+                : getDateKey(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
 
-        dailyEventsCard(todayKey);
-        
-        // Hide PWA prompt if in standalone mode
-        if (window.matchMedia('(display-mode: standalone').matches) {
-            pwaInstallPrompt.style.display = 'none';
+            dailyEventsCard(todayKey);
+            
+            // Hide PWA prompt if in standalone mode
+            if (window.matchMedia('(display-mode: standalone').matches) {
+                if (pwaInstallPrompt) pwaInstallPrompt.style.display = 'none';
+            }
+            
+            // Initialize mobile menu
+            new MobileMenu();
+            
+            console.log('✅ App initialized successfully!');
+            
+        } catch (error) {
+            console.error('❌ App initialization failed:', error);
         }
-        
-        // Initialize mobile menu
-        new MobileMenu();
     });
+    
+    // handle browser back/forward buttons
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.page) {
+            navigateTo(event.state.page);
+        }
+    });    
 }
 
 // ======================= BASE URL CONFIG =======================
@@ -85,45 +107,22 @@ let deferredPrompt;
 let clickTimer;
 const longPressDuration = 500;
 let selectedDayElement = null;
+let currentPage = 'calendar'; 
 
 // ======================= DOM ELEMENTS =======================
-const themeToggle = document.getElementById('themeToggle');
-const langToggle = document.getElementById('langToggle');
-const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-const navMenu = document.getElementById('navMenu');
-const prevYearBtn = document.getElementById('prevYear');
-const prevMonthBtn = document.getElementById('prevMonth');
-const todayBtn = document.getElementById('todayBtn');
-const nextMonthBtn = document.getElementById('nextMonth');
-const nextYearBtn = document.getElementById('nextYear');
-const currentMonthYear = document.getElementById('currentMonthYear');
-const weekdays = document.getElementById('weekdays');
-const daysGrid = document.getElementById('daysGrid');
-const eventModal = document.getElementById('eventModal');
-const closeModal = document.getElementById('closeModal');
-const eventForm = document.getElementById('eventForm');
-const eventTitleLabel = document.getElementById('eventTitleLabel');
-const eventDateLabel = document.getElementById('eventDateLabel');
-const eventDate = document.getElementById('eventDate');
-const eventDescriptionLabel = document.getElementById('eventDescriptionLabel'); 
-const eventDescription = document.getElementById('eventDescription');
-const submitEvent = document.getElementById('submitEvent');
-const cancelEvent = document.getElementById('cancelEvent');
-const eventsList = document.getElementById('eventsList');
-const modalTitle = document.getElementById('modalTitle');
-const settingsModal = document.getElementById('settingsModal');
-const closeSettingsModal = document.getElementById('closeSettingsModal');
-const calendarTypeSelect = document.getElementById('calendarTypeSelect');
-const themeToggleSettings = document.getElementById('themeToggleSettings');
-const langToggleSettings = document.getElementById('langToggleSettings');
-const themeSelect = document.getElementById('themeSelect');
-const langSelect = document.getElementById('langSelect');
-const secondaryCalendarToggle = document.getElementById('secondaryCalendarToggle');
-const pwaInstallPrompt = document.getElementById('pwaInstallPrompt');
-const pwaPromptTitle = document.getElementById('pwaPromptTitle');
-const pwaPromptSubtitle = document.getElementById('pwaPromptSubtitle');
-const pwaDismissBtn = document.getElementById('pwaDismissBtn');
-const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+let persianDay, persianMonth, persianFullDate;
+let gregorianDay, gregorianMonth, gregorianFullDate;
+let dailyEventsContainer;
+
+let themeToggle, langToggle, mobileMenuBtn, navMenu;
+let prevYearBtn, prevMonthBtn, todayBtn, nextMonthBtn, nextYearBtn;
+let currentMonthYear, weekdays, daysGrid;
+let eventModal, closeModal, eventForm;
+let eventTitleLabel, eventDateLabel, eventDate, eventDescriptionLabel, eventDescription;
+let submitEvent, cancelEvent, eventsList, modalTitle;
+let settingsModal, closeSettingsModal, calendarTypeSelect;
+let themeToggleSettings, langToggleSettings, themeSelect, langSelect, secondaryCalendarToggle;
+let pwaInstallPrompt, pwaPromptTitle, pwaPromptSubtitle, pwaDismissBtn, pwaInstallBtn;
 
 // ======================= Components =======================
 async function loadAllComponents() {
@@ -131,21 +130,1056 @@ async function loadAllComponents() {
 
 	if (document.getElementById('header'))
 		components.push({ id: 'header', url: `${BASE_PATH}/assets/components/header.html` });
-
+		
+	if (document.getElementById('main-content')) {
+      if (currentPage === 'calendar') {
+          components.push({ id: 'main-content', url: `${BASE_PATH}/assets/components/calendar.html` });
+      } else if (currentPage === 'settings') {
+          components.push({ id: 'main-content', url: `${BASE_PATH}/assets/components/settings.html` });
+      } else if (currentPage === 'privacy-policy') {
+          components.push({ id: 'main-content', url: `${BASE_PATH}/assets/components/privacy-policy.html` });
+      }
+  }
+  
 	if (document.getElementById('footer')) 
 		components.push({ id: 'footer', url: `${BASE_PATH}/assets/components/footer.html` });
 	
 	for (const c of components) {
 		await loadComponent(c.id, c.url);
     }
+    
+    // After all components are loaded, initialize DOM elements
+    initializeDOMElements();
 }
 
 function loadComponent(id, url) {
     return fetch(url)
-        .then(res => res.text())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`Failed to load component: ${url}, status: ${res.status}`);
+            }
+            return res.text();
+        })
         .then(html => {
-            document.getElementById(id).innerHTML = html;
+            const element = document.getElementById(id);
+            if (element) {
+                element.innerHTML = html;
+                console.log(`✅ Component ${id} loaded successfully`);
+                return true;
+            } else {
+                console.error(`❌ Element with id ${id} not found`);
+                return false;
+            }
+        })
+        .catch(error => {
+            console.error(`❌ Error loading component ${id}:`, error);
+            return false;
         });
+}
+
+// ======================= PAGE NAVIGATION =======================
+/**
+ * Navigates between pages
+ * @param {string} page - Page name ('calendar', 'settings')
+ */
+async function navigateTo(page) {
+    console.log(`🔄 Navigating to: ${page}`);
+    
+    if (currentPage === page) {
+        const mobileMenu = new MobileMenu();
+        if (mobileMenu.isOpen) {
+            mobileMenu.closeMenu();
+        }
+        return;
+    }
+    
+    window.history.pushState({ page }, '', `#${page}`);
+
+    currentPage = page;
+    
+    try {
+        let componentUrl;
+        if (page === 'calendar') {
+            componentUrl = `${BASE_PATH}/assets/components/calendar.html`;
+        } else if (page === 'settings') {
+            componentUrl = `${BASE_PATH}/assets/components/settings.html`;
+        } else if (page === 'privacy-policy') {
+            componentUrl = `${BASE_PATH}/assets/components/privacy-policy.html`;
+        } else if (page === 'terms') {
+            componentUrl = `${BASE_PATH}/assets/components/terms.html`;
+        } else if (page === 'faq') {
+            componentUrl = `${BASE_PATH}/assets/components/faq.html`;
+        } else if (page === 'about') {
+            componentUrl = `${BASE_PATH}/assets/components/about.html`;
+        }
+
+        if (componentUrl) {
+            await loadComponent('main-content', componentUrl);
+            
+            initializeDOMElements();
+            
+            if (page === 'calendar') {
+                setupCalendarNavigation();
+                initCalendar();
+                
+                // Show today's events
+                const todayKey = currentCalendar === 'persian' 
+                    ? getDateKey(currentPersianDate.year, currentPersianDate.month, currentPersianDate.day)
+                    : getDateKey(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+                dailyEventsCard(todayKey);
+                
+            } else if (page === 'settings') {
+                setupSettingsPage();
+            } else if (page === 'privacy-policy') {
+                setupPrivacyPolicyPage();
+            } else if (page === 'terms') {
+                setupTermsPage();
+            } else if (page === 'faq') {
+                setupFAQPage();
+            } else if (page === 'about') {
+                setupAboutPage();
+            }
+            
+            updateActiveNav();
+            
+            console.log(`✅ Successfully navigated to ${page}`);
+        }
+    } catch (error) {
+        console.error(`❌ Error navigating to ${page}:`, error);
+    }
+}
+
+/**
+ * Sets up settings page functionality
+ */
+function setupSettingsPage() {
+    console.log('⚙️ Setting up settings page...');
+    
+    if (themeSelect) themeSelect.value = localStorage.getItem('theme') || 'light';
+    if (langSelect) langSelect.value = currentLang;
+    if (calendarTypeSelect) calendarTypeSelect.value = currentCalendar;
+    if (secondaryCalendarToggle) secondaryCalendarToggle.checked = showSecondaryCalendar;
+    
+    if (themeSelect) {
+        themeSelect.addEventListener('change', handleThemeChange);
+    }
+    if (langSelect) {
+        langSelect.addEventListener('change', handleLanguageChange);
+    }
+    if (calendarTypeSelect) {
+        calendarTypeSelect.addEventListener('change', handleCalendarTypeChange);
+    }
+    if (secondaryCalendarToggle) {
+        secondaryCalendarToggle.addEventListener('change', handleSecondaryCalendarToggle);
+    }
+    
+    const resetBtn = document.getElementById('resetSettings');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetSettings);
+    }
+    
+    updateSettingsText();
+}
+
+/**
+ * Sets up privacy policy page functionality
+ */
+function setupPrivacyPolicyPage() {
+    console.log('🔒 Setting up privacy policy page...');
+    
+    const privacyContent = document.querySelector('.privacy-content');
+    if (!privacyContent) {
+        console.error('❌ Privacy content container not found');
+        return;
+    }
+    
+    // Clear existing content
+    privacyContent.innerHTML = '';
+    
+    // Get privacy data from language file
+    const privacyData = langData.privacy;
+    
+    // Create main container
+    const privacyContainer = document.createElement('div');
+    privacyContainer.className = 'privacy-container';
+    
+    // Create title
+    const title = document.createElement('h1');
+    title.className = 'privacy-title';
+    title.textContent = privacyData.title;
+    privacyContainer.appendChild(title);
+    
+    // Create sections
+    if (privacyData.sections && Array.isArray(privacyData.sections)) {
+        privacyData.sections.forEach((section, index) => {
+            const sectionElement = createPrivacySection(section, index);
+            privacyContainer.appendChild(sectionElement);
+        });
+    }
+        
+    privacyContent.appendChild(privacyContainer);
+    
+}
+
+
+/**
+ * Creates a privacy policy section
+ * @param {Object} section - Section data from language file
+ * @param {number} index - Section index
+ * @returns {HTMLElement} Section element
+ */
+function createPrivacySection(section, index) {
+    const sectionElement = document.createElement('div');
+    sectionElement.className = 'privacy-section';
+    sectionElement.setAttribute('role', 'region');
+    sectionElement.setAttribute('aria-labelledby', `section-title-${index}`);
+    
+    const title = document.createElement('h2');
+    title.id = `section-title-${index}`;
+    title.className = 'privacy-section-title';
+    title.textContent = section.title;
+    
+    const content = document.createElement('p');
+    content.className = 'privacy-section-content';
+    content.textContent = section.content;
+    
+    sectionElement.appendChild(title);
+    sectionElement.appendChild(content);
+    
+    return sectionElement;
+}
+
+/**
+ * Sets up terms page functionality
+ */
+function setupTermsPage() {
+    console.log('🔒 Setting up terms page...');
+    
+    const termsContent = document.querySelector('.terms-content');
+    if (!termsContent) {
+        console.error('❌ Terms content container not found');
+        return;
+    }
+    
+    // Clear existing content
+    termsContent.innerHTML = '';
+    
+    // Get terms data from language file
+    const termsData = langData.terms;
+    
+    // Create main container
+    const termsContainer = document.createElement('div');
+    termsContainer.className = 'terms-container';
+    
+    // Create title
+    const title = document.createElement('h1');
+    title.className = 'terms-title';
+    title.textContent = termsData.title;
+    termsContainer.appendChild(title);
+    
+    // Create sections
+    if (termsData.sections && Array.isArray(termsData.sections)) {
+        termsData.sections.forEach((section, index) => {
+            const sectionElement = createTermsSection(section, index);
+            termsContainer.appendChild(sectionElement);
+        });
+    }
+        
+    termsContent.appendChild(termsContainer);
+    
+}
+
+/**
+ * Creates a terms section
+ * @param {Object} section - Section data from language file
+ * @param {number} index - Section index
+ * @returns {HTMLElement} Section element
+ */
+function createTermsSection(section, index) {
+    const sectionElement = document.createElement('div');
+    sectionElement.className = 'terms-section';
+    sectionElement.setAttribute('role', 'region');
+    sectionElement.setAttribute('aria-labelledby', `section-title-${index}`);
+    
+    const title = document.createElement('h2');
+    title.id = `section-title-${index}`;
+    title.className = 'terms-section-title';
+    title.textContent = section.title;
+    
+    const content = document.createElement('p');
+    content.className = 'terms-section-content';
+    content.textContent = section.content;
+    
+    sectionElement.appendChild(title);
+    sectionElement.appendChild(content);
+    
+    return sectionElement;
+}
+
+// ======================= FAQ FUNCTIONALITY =======================
+
+/**
+ * Sets up FAQ page functionality
+ */
+function setupFAQPage() {
+    console.log('❓ Setting up FAQ page...');
+    
+    const faqContent = document.querySelector('.faq-page');
+    if (!faqContent) {
+        console.error('❌ FAQ content container not found');
+        return;
+    }
+    
+    // Load FAQ data and render
+    loadFaqData();
+    
+    // Setup search functionality
+    setupFaqSearch();
+    
+    // Setup category and question toggles
+    setupFaqToggles();
+}
+
+/**
+ * Loads FAQ data from language file and renders it
+ */
+function loadFaqData() {
+    const faqData = langData.faq;
+    if (!faqData) {
+        console.error('❌ FAQ data not found in language file');
+        return;
+    }
+    
+    renderFaqCategories(faqData.categories);
+}
+
+/**
+ * Renders FAQ categories and questions
+ * @param {Object} categories - FAQ categories data
+ */
+function renderFaqCategories(categories) {
+    const categoriesContainer = document.getElementById('faqCategories');
+    if (!categoriesContainer) return;
+    
+    categoriesContainer.innerHTML = '';
+    
+    Object.keys(categories).forEach(categoryKey => {
+        const category = categories[categoryKey];
+        const categoryElement = createCategoryElement(categoryKey, category);
+        categoriesContainer.appendChild(categoryElement);
+    });
+}
+
+/**
+ * Creates a FAQ category element
+ * @param {string} categoryKey - Category key
+ * @param {Object} category - Category data
+ * @returns {HTMLElement} Category element
+ */
+function createCategoryElement(categoryKey, category) {
+    const categoryElement = document.createElement('div');
+    categoryElement.className = 'faq-category';
+    categoryElement.setAttribute('data-category', categoryKey);
+    
+    // Category header
+    const header = document.createElement('div');
+    header.className = 'faq-category-header';
+    header.setAttribute('role', 'button');
+    header.setAttribute('tabindex', '0');
+    header.setAttribute('aria-expanded', 'false');
+    header.setAttribute('aria-controls', `category-${categoryKey}`);
+    
+    const title = document.createElement('h3');
+    title.className = 'faq-category-title';
+    title.textContent = category.title;
+    
+    const toggle = document.createElement('button');
+    toggle.className = 'faq-category-toggle';
+    toggle.setAttribute('aria-label', `${category.title} ${currentLang === 'fa' ? 'را باز کن' : 'expand'}`);
+    toggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
+    
+    header.appendChild(title);
+    header.appendChild(toggle);
+    
+    // Category content
+    const content = document.createElement('div');
+    content.className = 'faq-category-content';
+    content.id = `category-${categoryKey}`;
+    
+    if (category.questions && Array.isArray(category.questions)) {
+        category.questions.forEach((question, index) => {
+            const questionElement = createQuestionElement(question, index);
+            content.appendChild(questionElement);
+        });
+    }
+    
+    categoryElement.appendChild(header);
+    categoryElement.appendChild(content);
+    
+    // Add event listener for accessibility
+    header.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isExpanded);
+    });
+    
+    return categoryElement;
+}
+
+/**
+ * Creates a FAQ question element
+ * @param {Object} question - Question data
+ * @param {number} index - Question index
+ * @returns {HTMLElement} Question element
+ */
+function createQuestionElement(question, index) {
+    const questionElement = document.createElement('div');
+    questionElement.className = 'faq-question';
+    questionElement.setAttribute('role', 'article');
+    
+    const questionHeader = document.createElement('div');
+    questionHeader.className = 'faq-question-header';
+    questionHeader.setAttribute('role', 'button');
+    questionHeader.setAttribute('tabindex', '0');
+    questionHeader.setAttribute('aria-expanded', 'false');
+    questionHeader.setAttribute('aria-controls', `answer-${index}`);
+    
+    const questionText = document.createElement('div');
+    questionText.className = 'faq-question-text';
+    questionText.textContent = question.question;
+    
+    const questionToggle = document.createElement('button');
+    questionToggle.className = 'faq-question-toggle';
+    questionToggle.setAttribute('aria-label', currentLang === 'fa' ? 'نمایش پاسخ' : 'Show answer');
+    questionToggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
+    
+    questionHeader.appendChild(questionText);
+    questionHeader.appendChild(questionToggle);
+    
+    const answer = document.createElement('div');
+    answer.className = 'faq-answer';
+    answer.id = `answer-${index}`;
+    answer.setAttribute('role', 'region');
+    answer.textContent = question.answer;
+    
+    questionElement.appendChild(questionHeader);
+    questionElement.appendChild(answer);
+    
+    // Add event listener for accessibility
+    questionHeader.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isExpanded);
+    });
+    
+    return questionElement;
+}
+
+/**
+ * Sets up FAQ search functionality
+ */
+function setupFaqSearch() {
+    const searchInput = document.getElementById('faqSearch');
+    if (!searchInput) return;
+    
+    searchInput.addEventListener('input', debounce(handleFaqSearch, 300));
+}
+
+/**
+ * Handles FAQ search
+ * @param {Event} e - Input event
+ */
+function handleFaqSearch(e) {
+    const searchTerm = e.target.value.trim().toLowerCase();
+    
+    if (searchTerm.length === 0) {
+        resetFaqSearch();
+        return;
+    }
+    
+    performFaqSearch(searchTerm);
+}
+
+/**
+ * Performs FAQ search and highlights results
+ * @param {string} searchTerm - Search term
+ */
+function performFaqSearch(searchTerm) {
+    const questions = document.querySelectorAll('.faq-question');
+    let foundResults = false;
+    
+    questions.forEach(question => {
+        const questionText = question.querySelector('.faq-question-text').textContent.toLowerCase();
+        const answerText = question.querySelector('.faq-answer').textContent.toLowerCase();
+        
+        const matchesQuestion = questionText.includes(searchTerm);
+        const matchesAnswer = answerText.includes(searchTerm);
+        
+        if (matchesQuestion || matchesAnswer) {
+            question.style.display = 'block';
+            foundResults = true;
+            
+            // Highlight matching text
+            highlightSearchTerm(question, searchTerm);
+            
+            // Expand parent category
+            const category = question.closest('.faq-category');
+            const categoryContent = category.querySelector('.faq-category-content');
+            categoryContent.classList.add('expanded');
+        } else {
+            question.style.display = 'none';
+        }
+    });
+    
+    showNoResults(!foundResults);
+}
+
+/**
+ * Highlights search term in FAQ content
+ * @param {HTMLElement} question - Question element
+ * @param {string} searchTerm - Search term
+ */
+function highlightSearchTerm(question, searchTerm) {
+    const questionText = question.querySelector('.faq-question-text');
+    const answerText = question.querySelector('.faq-answer');
+    
+    const highlightText = (element, term) => {
+        const text = element.textContent;
+        const regex = new RegExp(`(${term})`, 'gi');
+        const highlighted = text.replace(regex, '<span class="search-highlight">$1</span>');
+        element.innerHTML = highlighted;
+    };
+    
+    highlightText(questionText, searchTerm);
+    highlightText(answerText, searchTerm);
+}
+
+/**
+ * Resets FAQ search state
+ */
+function resetFaqSearch() {
+    const questions = document.querySelectorAll('.faq-question');
+    questions.forEach(question => {
+        question.style.display = 'block';
+        
+        // Remove highlighting
+        const questionText = question.querySelector('.faq-question-text');
+        const answerText = question.querySelector('.faq-answer');
+        
+        questionText.innerHTML = questionText.textContent;
+        answerText.innerHTML = answerText.textContent;
+    });
+    
+    showNoResults(false);
+}
+
+/**
+ * Shows/hides no results message
+ * @param {boolean} show - Whether to show the message
+ */
+function showNoResults(show) {
+    let noResults = document.querySelector('.faq-no-results');
+    
+    if (!noResults) {
+        noResults = document.createElement('div');
+        noResults.className = 'faq-no-results';
+        noResults.textContent = langData.faq?.noResults || 'نتیجه‌ای یافت نشد';
+        
+        const categoriesContainer = document.getElementById('faqCategories');
+        if (categoriesContainer) {
+            categoriesContainer.appendChild(noResults);
+        }
+    }
+    
+    noResults.classList.toggle('show', show);
+}
+
+/**
+ * Sets up FAQ toggle functionality
+ */
+function setupFaqToggles() {
+    // Use event delegation for all FAQ interactions
+    document.addEventListener('click', (e) => {
+        // Category toggle
+        if (e.target.closest('.faq-category-toggle')) {
+            e.preventDefault();
+            const toggle = e.target.closest('.faq-category-toggle');
+            const category = toggle.closest('.faq-category');
+            const content = category.querySelector('.faq-category-content');
+            const icon = toggle.querySelector('i');
+            
+            // Toggle category
+            toggle.classList.toggle('rotated');
+            content.classList.toggle('expanded');
+            
+            // Update icon
+            if (content.classList.contains('expanded')) {
+                icon.className = 'fas fa-chevron-up';
+            } else {
+                icon.className = 'fas fa-chevron-down';
+            }
+        }
+        
+        // Question toggle
+        if (e.target.closest('.faq-question-toggle')) {
+            e.preventDefault();
+            const toggle = e.target.closest('.faq-question-toggle');
+            const question = toggle.closest('.faq-question');
+            const answer = question.querySelector('.faq-answer');
+            const icon = toggle.querySelector('i');
+            
+            // Toggle question
+            toggle.classList.toggle('rotated');
+            answer.classList.toggle('expanded');
+            
+            // Update icon
+            if (answer.classList.contains('expanded')) {
+                icon.className = 'fas fa-chevron-up';
+            } else {
+                icon.className = 'fas fa-chevron-down';
+            }
+        }
+        
+        // Question header click (alternative to toggle button)
+        if (e.target.closest('.faq-question-header') && !e.target.closest('.faq-question-toggle')) {
+            e.preventDefault();
+            const header = e.target.closest('.faq-question-header');
+            const question = header.closest('.faq-question');
+            const answer = question.querySelector('.faq-answer');
+            const toggle = question.querySelector('.faq-question-toggle');
+            const icon = toggle.querySelector('i');
+            
+            // Toggle question
+            toggle.classList.toggle('rotated');
+            answer.classList.toggle('expanded');
+            
+            // Update icon
+            if (answer.classList.contains('expanded')) {
+                icon.className = 'fas fa-chevron-up';
+            } else {
+                icon.className = 'fas fa-chevron-down';
+            }
+        }
+    });
+
+    // Add keyboard support for accessibility
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            if (e.target.closest('.faq-question-header') || e.target.closest('.faq-category-header')) {
+                e.preventDefault();
+                e.target.click();
+            }
+        }
+    });
+}
+        
+/**
+ * Debounce function for search
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {Function} Debounced function
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ======================= ABOUT FUNCTIONALITY =======================
+        
+/**
+ * Sets up about page functionality
+ */
+function setupAboutPage() {
+    console.log('👤 Setting up about page...');
+    
+    const aboutContent = document.querySelector('.about-content');
+    if (!aboutContent) {
+        console.error('❌ About content container not found');
+        return;
+    }
+    
+    // Clear existing content
+    aboutContent.innerHTML = '';
+    
+    // Get about data from language file
+    const aboutData = langData.about;
+    
+    // Create main container
+    const aboutContainer = document.createElement('div');
+    aboutContainer.className = 'about-container';
+    
+    // Create hero section
+    const heroSection = createAboutHero(aboutData);
+    aboutContainer.appendChild(heroSection);
+    
+    // Create about me section
+    const aboutMeSection = createAboutSection(
+        aboutData.sections.aboutMe.title,
+        aboutData.sections.aboutMe.content
+    );
+    aboutContainer.appendChild(aboutMeSection);
+    
+    // Create projects section
+    const projectsSection = createProjectsSection(aboutData);
+    aboutContainer.appendChild(projectsSection);
+    
+    // Create skills section
+    const skillsSection = createSkillsSection(aboutData);
+    aboutContainer.appendChild(skillsSection);
+    
+    // Create contact section
+    const contactSection = createContactSection(aboutData);
+    aboutContainer.appendChild(contactSection);
+    
+    aboutContent.appendChild(aboutContainer);
+}
+
+/**
+ * Creates about hero section
+ */
+function createAboutHero(aboutData) {
+    const hero = document.createElement('div');
+    hero.className = 'about-hero';
+    
+        // Get about data from language file
+    const uiData = langData.ui;
+    
+    const title = document.createElement('h1');
+    title.className = 'about-hero-title';
+    title.textContent = uiData.logo;
+    
+    const subtitle = document.createElement('p');
+    subtitle.className = 'about-hero-subtitle';
+    subtitle.textContent = uiData.slogan;
+    
+    const profile = document.createElement('div');
+    profile.className = 'about-profile';
+    
+    // Avatar (you can add your image later)
+    const avatar = document.createElement('div');
+    avatar.className = 'about-avatar';
+    avatar.style.backgroundColor = 'rgba(255,255,255,0.2)';
+    avatar.style.display = 'flex';
+    avatar.style.alignItems = 'center';
+    avatar.style.justifyContent = 'center';
+    avatar.innerHTML = '<i class="fas fa-user" style="font-size: 3rem; color: white;"></i>';
+    
+    const profileInfo = document.createElement('div');
+    profileInfo.className = 'about-profile-info';
+    
+    const profileName = document.createElement('div');
+    profileName.className = 'about-profile-name';
+    profileName.textContent = aboutData.hero.title;
+    
+    const profileRole = document.createElement('div');
+    profileRole.className = 'about-profile-role';
+    profileRole.textContent = aboutData.hero.subtitle;
+    
+    const socialLinks = document.createElement('div');
+    socialLinks.className = 'about-social-links';
+    
+    // GitHub link
+    const githubLink = document.createElement('a');
+    githubLink.className = 'about-social-link';
+    githubLink.href = 'https://github.com/MEHDIMYADI';
+    githubLink.target = '_blank';
+    githubLink.innerHTML = '<i class="fab fa-github"></i>';
+    githubLink.title = aboutData.links.github;
+    
+    // Website link
+    const websiteLink = document.createElement('a');
+    websiteLink.className = 'about-social-link';
+    websiteLink.href = 'https://dimyadi.ir/';
+    websiteLink.target = '_blank';
+    websiteLink.innerHTML = '<i class="fas fa-globe"></i>';
+    websiteLink.title = aboutData.links.website;
+    
+    // Roozegaar link
+    const roozegaarLink = document.createElement('a');
+    roozegaarLink.className = 'about-social-link';
+    roozegaarLink.href = 'https://roozegaar.ir/';
+    roozegaarLink.target = '_blank';
+    roozegaarLink.innerHTML = '<i class="fas fa-calendar"></i>';
+    roozegaarLink.title = aboutData.links.roozegaar;
+    
+    socialLinks.appendChild(githubLink);
+    socialLinks.appendChild(websiteLink);
+    socialLinks.appendChild(roozegaarLink);
+    
+    profileInfo.appendChild(profileName);
+    profileInfo.appendChild(profileRole);
+    profileInfo.appendChild(socialLinks);
+    
+    profile.appendChild(avatar);
+    profile.appendChild(profileInfo);
+    
+    hero.appendChild(title);
+    hero.appendChild(subtitle);
+    hero.appendChild(profile);
+    
+    return hero;
+}
+
+/**
+ * Creates a generic about section
+ */
+function createAboutSection(title, content) {
+    const section = document.createElement('div');
+    section.className = 'about-section';
+    
+    const sectionTitle = document.createElement('h2');
+    sectionTitle.className = 'about-section-title';
+    sectionTitle.textContent = title;
+    
+    const sectionContent = document.createElement('p');
+    sectionContent.className = 'about-section-content';
+    sectionContent.textContent = content;
+    
+    section.appendChild(sectionTitle);
+    section.appendChild(sectionContent);
+    
+    return section;
+}
+
+/**
+ * Creates projects section
+ */
+function createProjectsSection(aboutData) {
+    const section = document.createElement('div');
+    section.className = 'about-section';
+    
+    const sectionTitle = document.createElement('h2');
+    sectionTitle.className = 'about-section-title';
+    sectionTitle.textContent = aboutData.sections.projects.title;
+    
+    const sectionContent = document.createElement('p');
+    sectionContent.className = 'about-section-content';
+    sectionContent.textContent = aboutData.sections.projects.content;
+    
+    const projectsGrid = document.createElement('div');
+    projectsGrid.className = 'about-projects';
+    
+    aboutData.projects.forEach(project => {
+        const projectCard = document.createElement('div');
+        projectCard.className = 'about-project-card';
+        
+        const projectTitle = document.createElement('h3');
+        projectTitle.className = 'about-project-title';
+        projectTitle.textContent = project.title;
+        
+        const projectDesc = document.createElement('p');
+        projectDesc.className = 'about-project-description';
+        projectDesc.textContent = project.description;
+        
+        const projectLink = document.createElement('a');
+        projectLink.className = 'about-project-link';
+        projectLink.href = project.url;
+        projectLink.target = '_blank';
+        projectLink.innerHTML = '<i class="fas fa-external-link-alt"></i> ' + (currentLang === 'fa' ? 'مشاهده پروژه' : 'View Project');
+        
+        projectCard.appendChild(projectTitle);
+        projectCard.appendChild(projectDesc);
+        projectCard.appendChild(projectLink);
+        projectsGrid.appendChild(projectCard);
+    });
+    
+    section.appendChild(sectionTitle);
+    section.appendChild(sectionContent);
+    section.appendChild(projectsGrid);
+    
+    return section;
+}
+
+/**
+ * Creates skills section
+ */
+function createSkillsSection(aboutData) {
+    const section = document.createElement('div');
+    section.className = 'about-section';
+    
+    const sectionTitle = document.createElement('h2');
+    sectionTitle.className = 'about-section-title';
+    sectionTitle.textContent = aboutData.sections.skills.title;
+    
+    const sectionContent = document.createElement('p');
+    sectionContent.className = 'about-section-content';
+    sectionContent.textContent = aboutData.sections.skills.content;
+    
+    const skillsContainer = document.createElement('div');
+    skillsContainer.className = 'about-skills';
+    
+    aboutData.skills.forEach(skill => {
+        const skillElement = document.createElement('span');
+        skillElement.className = 'about-skill';
+        skillElement.textContent = skill;
+        skillsContainer.appendChild(skillElement);
+    });
+    
+    section.appendChild(sectionTitle);
+    section.appendChild(sectionContent);
+    section.appendChild(skillsContainer);
+    
+    return section;
+}
+
+/**
+ * Creates contact section
+ */
+function createContactSection(aboutData) {
+    const section = document.createElement('div');
+    section.className = 'about-section';
+    
+    const sectionTitle = document.createElement('h2');
+    sectionTitle.className = 'about-section-title';
+    sectionTitle.textContent = aboutData.sections.contact.title;
+    
+    const sectionContent = document.createElement('p');
+    sectionContent.className = 'about-section-content';
+    sectionContent.textContent = aboutData.sections.contact.content;
+    
+    const contactInfo = document.createElement('div');
+    contactInfo.className = 'about-social-links';
+    contactInfo.style.marginTop = '1rem';
+    
+    // Email contact
+    const emailLink = document.createElement('a');
+    emailLink.className = 'about-social-link';
+    emailLink.href = 'mailto:mahdi2006d@gmail.com';
+    emailLink.innerHTML = '<i class="fas fa-envelope"></i>';
+    emailLink.title = 'Email';
+    
+    // GitHub contact
+    const githubContact = document.createElement('a');
+    githubContact.className = 'about-social-link';
+    githubContact.href = 'https://github.com/MEHDIMYADI';
+    githubContact.target = '_blank';
+    githubContact.innerHTML = '<i class="fab fa-github"></i>';
+    githubContact.title = 'GitHub';
+    
+    contactInfo.appendChild(emailLink);
+    contactInfo.appendChild(githubContact);
+    
+    section.appendChild(sectionTitle);
+    section.appendChild(sectionContent);
+    section.appendChild(contactInfo);
+    
+    return section;
+}
+    
+/**
+ * Resets all settings to default
+ */
+function resetSettings() {
+    if (confirm(langData.ui.resetConfirm || 'آیا از بازنشانی همه تنظیمات اطمینان دارید؟')) {
+        localStorage.removeItem('theme');
+        localStorage.removeItem('lang');
+        localStorage.removeItem('calendarType');
+        localStorage.removeItem('showSecondaryCalendar');
+        localStorage.removeItem('calendarEvents');
+        
+        currentLang = 'fa';
+        currentCalendar = 'persian';
+        showSecondaryCalendar = true;
+        events = {};
+        
+        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.setAttribute('lang', 'fa');
+        document.documentElement.setAttribute('dir', 'rtl');
+        document.body.setAttribute('data-calendar', 'persian');
+        
+        location.reload();
+    }
+}
+
+/**
+ * Updates active navigation state
+ */
+function updateActiveNav() {
+    const navItems = document.querySelectorAll('#navMenu li');
+    navItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    let activeIndex = 0;
+    if (currentPage === 'settings') {
+        activeIndex = 1;
+    }
+    
+    if (navItems[activeIndex]) {
+        navItems[activeIndex].classList.add('active');
+    }
+}
+/**
+ * Initialize all DOM elements after components are loaded
+ */
+function initializeDOMElements() {
+    // Calendar navigation elements
+    themeToggle = document.getElementById('themeToggle');
+    langToggle = document.getElementById('langToggle');
+    mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    navMenu = document.getElementById('navMenu');
+    prevYearBtn = document.getElementById('prevYear');
+    prevMonthBtn = document.getElementById('prevMonth');
+    todayBtn = document.getElementById('todayBtn');
+    nextMonthBtn = document.getElementById('nextMonth');
+    nextYearBtn = document.getElementById('nextYear');
+    currentMonthYear = document.getElementById('currentMonthYear');
+    weekdays = document.getElementById('weekdays');
+    daysGrid = document.getElementById('daysGrid');
+    
+    // Modal elements
+    eventModal = document.getElementById('eventModal');
+    closeModal = document.getElementById('closeModal');
+    eventForm = document.getElementById('eventForm');
+    eventTitleLabel = document.getElementById('eventTitleLabel');
+    eventDateLabel = document.getElementById('eventDateLabel');
+    eventDate = document.getElementById('eventDate');
+    eventDescriptionLabel = document.getElementById('eventDescriptionLabel'); 
+    eventDescription = document.getElementById('eventDescription');
+    submitEvent = document.getElementById('submitEvent');
+    cancelEvent = document.getElementById('cancelEvent');
+    eventsList = document.getElementById('eventsList');
+    modalTitle = document.getElementById('modalTitle');
+    
+    // Settings modal elements
+    settingsModal = document.getElementById('settingsModal');
+    closeSettingsModal = document.getElementById('closeSettingsModal');
+    calendarTypeSelect = document.getElementById('calendarTypeSelect');
+    themeToggleSettings = document.getElementById('themeToggleSettings');
+    langToggleSettings = document.getElementById('langToggleSettings');
+    themeSelect = document.getElementById('themeSelect');
+    langSelect = document.getElementById('langSelect');
+    secondaryCalendarToggle = document.getElementById('secondaryCalendarToggle');
+    
+    // PWA elements
+    pwaInstallPrompt = document.getElementById('pwaInstallPrompt');
+    pwaPromptTitle = document.getElementById('pwaPromptTitle');
+    pwaPromptSubtitle = document.getElementById('pwaPromptSubtitle');
+    pwaDismissBtn = document.getElementById('pwaDismissBtn');
+    pwaInstallBtn = document.getElementById('pwaInstallBtn');
+    
+    // Calendar card elements
+    persianDay = document.getElementById('persianDay');
+    persianMonth = document.getElementById('persianMonth');
+    persianFullDate = document.getElementById('persianFullDate');
+    gregorianDay = document.getElementById('gregorianDay');
+    gregorianMonth = document.getElementById('gregorianMonth');
+    gregorianFullDate = document.getElementById('gregorianFullDate');
+    dailyEventsContainer = document.getElementById('dailyEventsContainer');
+    
+    // Log initialization status
+    console.log('DOM elements initialized:', {
+        currentMonthYear: !!currentMonthYear,
+        daysGrid: !!daysGrid,
+        weekdays: !!weekdays,
+        eventModal: !!eventModal,
+        settingsModal: !!settingsModal
+    });
 }
 
 // ======================= EVENT LISTENERS SETUP =======================
@@ -154,9 +1188,44 @@ function loadComponent(id, url) {
  */
 function setupEventListeners() {
     setupMobileMenu();
+    setupNavigation();
     setupCalendarNavigation();
     setupEventModal();
     setupThemeAndLanguageToggles();
+}
+
+/**
+ * Sets up navigation between pages
+ */
+function setupNavigation() {
+    document.addEventListener('click', (e) => {
+        const navLink = e.target.closest('#navMenu a');
+        if (navLink) {
+            e.preventDefault();
+            
+            const linkText = navLink.textContent.toLowerCase();
+            if (linkText.includes('calendar') || linkText.includes('تقویم')) {
+                navigateTo('calendar');
+            } else if (linkText.includes('settings') || linkText.includes('تنظیمات')) {
+                navigateTo('settings');
+            } else if (linkText.includes('about') || linkText.includes('درباره')) {
+                navigateTo('about');
+            }
+        }
+        
+        const footerLink = e.target.closest('.footer-links a, .moreInfoLinks a');
+        if (footerLink) {
+            e.preventDefault();
+            const linkText = footerLink.textContent.toLowerCase();
+            if (linkText.includes('privacy') || linkText.includes('حریم')) {
+                navigateTo('privacy-policy');
+            } else if (linkText.includes('terms') || linkText.includes('conditions') || linkText.includes('قوانین') || linkText.includes('مقررات')) {
+                navigateTo('terms');
+            } else if (linkText.includes('questions') || linkText.includes('faq') || linkText.includes('سوالات') || linkText.includes('متداول')) {
+                navigateTo('faq');
+            }
+        }
+    });
 }
 
 /**
@@ -338,10 +1407,20 @@ function restoreCalendarState() {
  * Updates calendar header with current month and year
  */
 function updateCalendarHeader() {
-    if (currentCalendar === 'persian') {
-        currentMonthYear.textContent = `${langData.months.fa[currentPersianDate.month - 1]} ${currentPersianDate.year}`;
-    } else {
-        currentMonthYear.textContent = `${langData.months.en[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    if (!currentMonthYear) {
+        console.warn('⚠️ currentMonthYear element not found, skipping update');
+        return;
+    }
+    
+    try {
+        if (currentCalendar === 'persian') {
+            currentMonthYear.textContent = `${langData.months.fa[currentPersianDate.month - 1]} ${currentPersianDate.year}`;
+        } else {
+            currentMonthYear.textContent = `${langData.months.en[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+        }
+        console.log('✅ Calendar header updated successfully');
+    } catch (error) {
+        console.error('❌ Error updating calendar header:', error);
     }
 }
 
@@ -999,6 +2078,11 @@ function updateCalendarCards(dateKey = null) {
  * Renders calendar cards with current dates
  */
 function calendarCards() {
+    if (!persianDay || !gregorianDay) {
+        console.warn('⚠️ Calendar card elements not found');
+        return;
+    }
+    
     updatePersianCard();
     updateGregorianCard();
 }
@@ -1007,10 +2091,6 @@ function calendarCards() {
  * Updates Persian calendar card
  */
 function updatePersianCard() {
-    const persianDay = document.getElementById('persianDay');
-    const persianMonth = document.getElementById('persianMonth');
-    const persianFullDate = document.getElementById('persianFullDate');
-    
     if (persianDay && persianMonth && persianFullDate) {
         persianDay.textContent = currentPersianDate.day;
         persianMonth.textContent = langData.months.fa[currentPersianDate.month - 1];
@@ -1022,10 +2102,6 @@ function updatePersianCard() {
  * Updates Gregorian calendar card
  */
 function updateGregorianCard() {
-    const gregorianDay = document.getElementById('gregorianDay');
-    const gregorianMonth = document.getElementById('gregorianMonth');
-    const gregorianFullDate = document.getElementById('gregorianFullDate');
-    
     if (gregorianDay && gregorianMonth && gregorianFullDate) {
         const gDate = persianToGregorian(currentPersianDate);
         gregorianDay.textContent = gDate.getDate();
@@ -1123,10 +2199,9 @@ function updateNavigationText() {
     document.querySelector('.logo').textContent = langData.ui.logo;
 
     const navItems = document.querySelectorAll('#navMenu li span');
-    if (navItems[0]) navItems[0].textContent = langData.ui.home || 'Home';
-    if (navItems[1]) navItems[1].textContent = langData.ui.calendar || 'Calendar';
-    if (navItems[2]) navItems[2].textContent = langData.ui.settings || 'Settings';
-    if (navItems[3]) navItems[3].textContent = langData.ui.about || 'About Us';
+    if (navItems[0]) navItems[0].textContent = langData.ui.calendar || 'Calendar';
+    if (navItems[1]) navItems[1].textContent = langData.ui.settings || 'Settings';
+    if (navItems[2]) navItems[2].textContent = langData.ui.about || 'About Us';
 }
 
 /**
@@ -1178,11 +2253,9 @@ function updateFooterText() {
 
     // Update useful links
     const usefulLinks = footer.querySelectorAll('.footer-column:nth-child(2) .footer-links li a');
-    if (usefulLinks.length >= 4) {
-        usefulLinks[0].textContent = langData.ui.homePage || 'صفحه اصلی';
-        usefulLinks[1].textContent = langData.ui.roozegaar || 'روزگار';
-        usefulLinks[2].textContent = langData.ui.roozegaarCalendar || 'تقویم روزگار';
-        usefulLinks[3].textContent = langData.ui.help || 'راهنما';
+    if (usefulLinks.length >= 2) {
+        usefulLinks[0].textContent = langData.ui.roozegaar || 'روزگار';
+        usefulLinks[1].textContent = langData.ui.roozegaarCalendar || 'تقویم روزگار';
     }
 
     // Update contact info labels
@@ -1194,12 +2267,10 @@ function updateFooterText() {
 
     // Update more info links
     const moreInfoLinks = footer.querySelectorAll('.footer-column:nth-child(4) .footer-links li a');
-    if (moreInfoLinks.length >= 5) {
+    if (moreInfoLinks.length >= 3) {
         moreInfoLinks[0].textContent = langData.ui.privacyPolicy || 'حریم خصوصی';
         moreInfoLinks[1].textContent = langData.ui.termsConditions || 'قوانین و مقررات';
         moreInfoLinks[2].textContent = langData.ui.faq || 'سوالات متداول';
-        moreInfoLinks[3].textContent = langData.ui.appVersions || 'نسخه‌های برنامه';
-        moreInfoLinks[4].textContent = langData.ui.reportIssue || 'گزارش مشکل';
     }
 
     // Update copyright with dynamic date based on language
@@ -1264,8 +2335,8 @@ function updatePwaText() {
  * Updates settings modal text
  */
 function updateSettingsText() {
-    const settingsModalTitle = document.getElementById('settingsModalTitle');
-    if (settingsModalTitle) settingsModalTitle.textContent = langData.ui.settings || 'Settings';
+    const settingsTitle = document.getElementById('settings');
+    if (settingsTitle) settingsTitle.textContent = langData.ui.settings || 'Settings';
     
     const themeLabel = document.querySelector('label[for="themeSelect"]');
     if (themeLabel) themeLabel.textContent = langData.ui.theme || 'Theme';
@@ -1278,6 +2349,9 @@ function updateSettingsText() {
     
     const secondaryLabel = document.querySelector('label[for="secondaryCalendarToggle"]');
     if (secondaryLabel) secondaryLabel.textContent = langData.ui.showSecondaryCalendar || 'Show Secondary Calendar';
+
+    const resetSettings = document.getElementById('resetSettings');
+    if (resetSettings) resetSettings.textContent = langData.ui.resetSettings || 'Reset Settings';
 
     if (themeSelect) {
         if (themeSelect.options[0]) themeSelect.options[0].text = langData.ui.light || 'Light';
