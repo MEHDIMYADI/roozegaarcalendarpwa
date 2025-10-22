@@ -356,29 +356,38 @@ async function navigateTo(page) {
     }
     
     window.history.pushState({ page }, '', `#${page}`);
-
     currentPage = page;
     
     try {
         let componentUrl;
+        let pageTitle = '';
+        
         if (page === 'calendar') {
             componentUrl = `${BASE_PATH}/assets/components/calendar.html`;
+            pageTitle = langData.ui.calendar || 'تقویم';
         } else if (page === 'settings') {
             componentUrl = `${BASE_PATH}/assets/components/settings.html`;
+            pageTitle = langData.ui.settings || 'تنظیمات';
         } else if (page === 'privacy-policy') {
             componentUrl = `${BASE_PATH}/assets/components/privacy-policy.html`;
+            pageTitle = langData.ui.privacyPolicy || 'حریم خصوصی';
         } else if (page === 'terms') {
             componentUrl = `${BASE_PATH}/assets/components/terms.html`;
+            pageTitle = langData.ui.termsConditions || 'قوانین و مقررات';
         } else if (page === 'faq') {
             componentUrl = `${BASE_PATH}/assets/components/faq.html`;
+            pageTitle = langData.ui.faq || 'سوالات متداول';
         } else if (page === 'about') {
             componentUrl = `${BASE_PATH}/assets/components/about.html`;
+            pageTitle = langData.ui.about || 'درباره ما';
         }
 
         if (componentUrl) {
             await loadComponent('main-content', componentUrl);
-            
             initializeDOMElements();
+            
+            // Update logo with current page title
+            updateLogoWithPageTitle(pageTitle);
             
             if (page === 'calendar') {
                 setupCalendarNavigation();
@@ -2398,12 +2407,65 @@ function applyLanguage() {
  * Updates navigation menu text based on current language
  */
 function updateNavigationText() {
-    document.querySelector('.logo').textContent = langData.ui.logo;
+    const mainLogoText = langData.ui.logo;
+    
+    // Update logo based on current page
+    if (currentPage === 'calendar') {
+        document.querySelector('.logo').textContent = mainLogoText;
+    } else {
+        // Re-apply page title to logo
+        let pageTitle = '';
+        switch(currentPage) {
+            case 'settings':
+                pageTitle = langData.ui.settings || 'Settings';
+                break;
+            case 'privacy-policy':
+                pageTitle = langData.ui.privacyPolicy || 'Privacy Policy';
+                break;
+            case 'terms':
+                pageTitle = langData.ui.termsConditions || 'Terms & Conditions';
+                break;
+            case 'faq':
+                pageTitle = langData.ui.faq || 'FAQ';
+                break;
+            case 'about':
+                pageTitle = langData.ui.about || 'About Us';
+                break;
+        }
+        updateLogoWithPageTitle(pageTitle);
+    }
 
     const navItems = document.querySelectorAll('#navMenu li span');
     if (navItems[0]) navItems[0].textContent = langData.ui.calendar || 'Calendar';
     if (navItems[1]) navItems[1].textContent = langData.ui.settings || 'Settings';
     if (navItems[2]) navItems[2].textContent = langData.ui.about || 'About Us';
+}
+
+/**
+ * Updates logo to show current page title alongside main logo
+ * @param {string} pageTitle - Current page title
+ */
+function updateLogoWithPageTitle(pageTitle) {
+    const logoElement = document.querySelector('.logo');
+    if (!logoElement) return;
+    
+    const mainLogoText = langData.ui.logo || 'تقویم روزگار';
+    
+    if (pageTitle && currentPage !== 'calendar') {
+        // Show page title alongside logo
+        logoElement.innerHTML = `
+            <span class="main-logo">${mainLogoText}</span>
+            <span class="page-separator"></span>
+            <span class="page-title">${pageTitle}</span>
+        `;
+        
+        // Add CSS classes for styling
+        logoElement.classList.add('logo-with-page-title');
+    } else {
+        // Show only main logo on calendar page
+        logoElement.textContent = mainLogoText;
+        logoElement.classList.remove('logo-with-page-title');
+    }
 }
 
 /**
@@ -2537,9 +2599,6 @@ function updatePwaText() {
  * Updates settings modal text
  */
 function updateSettingsText() {
-    const settingsTitle = document.getElementById('settings');
-    if (settingsTitle) settingsTitle.textContent = langData.ui.settings || 'Settings';
-    
     const themeLabel = document.querySelector('label[for="themeSelect"]');
     if (themeLabel) themeLabel.textContent = langData.ui.theme || 'Theme';
     
