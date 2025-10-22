@@ -1381,13 +1381,27 @@ function setupNavigation() {
         const footerLink = e.target.closest('.footer-links a, .moreInfoLinks a');
         if (footerLink) {
             e.preventDefault();
+            const linkHref = footerLink.getAttribute('href');
             const linkText = footerLink.textContent.toLowerCase();
-            if (linkText.includes('privacy') || linkText.includes('حریم')) {
-                navigateTo('privacy-policy');
-            } else if (linkText.includes('terms') || linkText.includes('conditions') || linkText.includes('قوانین') || linkText.includes('مقررات')) {
-                navigateTo('terms');
-            } else if (linkText.includes('questions') || linkText.includes('faq') || linkText.includes('سوالات') || linkText.includes('متداول')) {
-                navigateTo('faq');
+            
+            // Detect link type (internal or external)
+            if (linkHref && (linkHref.startsWith('http') || linkHref.startsWith('//'))) {
+                // External link - open in browser
+                openExternalLink(linkHref);
+            } else {
+                // Internal link
+                if (linkText.includes('privacy') || linkText.includes('حریم')) {
+                    navigateTo('privacy-policy');
+                } else if (linkText.includes('terms') || linkText.includes('conditions') || linkText.includes('قوانین') || linkText.includes('مقررات')) {
+                    navigateTo('terms');
+                } else if (linkText.includes('questions') || linkText.includes('faq') || linkText.includes('سوالات') || linkText.includes('متداول')) {
+                    navigateTo('faq');
+                } else if (linkText.includes('about') || linkText.includes('درباره')) {
+                    navigateTo('about');
+                }
+                
+                // Scroll to top
+                scrollToTop();
             }
         }
     });
@@ -2781,6 +2795,37 @@ function showToast(message) {
     setTimeout(() => {
         toast.remove();
     }, 3000);
+}
+
+/**
+ * Scrolls to the top of the page with smooth animation
+ * Ensures compatibility with both desktop and mobile browsers
+ */
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    
+    // Additional scroll methods for mobile browser compatibility
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+}
+
+/**
+ * Opens external links in the appropriate browser based on PWA detection
+ * @param {string} url - The URL to open
+ */
+function openExternalLink(url) {
+    // Check if the app is running in PWA/standalone mode
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true) {
+        // In PWA mode - open in system browser
+        window.open(url, '_system');
+    } else {
+        // In normal browser mode - open in new tab
+        window.open(url, '_blank');
+    }
 }
 
 // ======================= UTILITY FUNCTIONS =======================
