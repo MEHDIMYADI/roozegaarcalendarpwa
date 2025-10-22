@@ -126,10 +126,16 @@ nav {
     white-space: nowrap;
     align-items: center;
     font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
 .nav-menu li a:hover {
     background-color: var(--hover-color);
+    transform: translateX(5px);
+}
+
+[dir="rtl"] .nav-menu li a:hover {
+    transform: translateX(-5px);
 }
 
 .nav-menu li a i {
@@ -404,15 +410,20 @@ nav {
     padding: 12px 15px;
     border: 2px solid var(--border-color);
     border-radius: 8px;
-    background: var(--input-bg);
+    background: var(--day-bg);
     color: var(--text-color);
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
 }
 
-.setting-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
+.setting-select option {
+    background: var(--day-bg);
+    color: var(--text-color);
+    padding: 10px;
 }
 
 .btn-warning {
@@ -1522,12 +1533,14 @@ body.offline-page main:not(.offline-container) {
         right: -280px;
         border-left: 1px solid var(--border-color);
         border-top-left-radius: 10px;
+        transition: right 0.3s ease;
     }
 
     html[dir="ltr"] nav {
         left: -280px;
         border-right: 1px solid var(--border-color);
         border-top-right-radius: 10px;
+        transition: left 0.3s ease;
     }
 
     html[dir="rtl"] nav.active {
@@ -1564,18 +1577,35 @@ body.offline-page main:not(.offline-container) {
         width: 20px;
     }
 
+    /* Closing animation */
+    html[dir="rtl"] nav.closing {
+        right: -280px !important;
+    }
+
+    html[dir="ltr"] nav.closing {
+        left: -280px !important;
+    }    
+    
     .nav-overlay {
         display: none;
         top: 0;
         left: 0;
         background: rgba(0, 0, 0, 0.5);
         z-index: 999;
+        transition: all 0.3s ease;
     }
 
     .nav-overlay.active {
+        opacity: 1;
         display: block;
+        visibility: visible;
     }
 
+    .nav-overlay.closing {
+        opacity: 0;
+        visibility: hidden;
+    }
+    
     .logo {
         position: absolute;
         left: 50%;

@@ -37,6 +37,10 @@ function initializeApp() {
             // Initialize manifest based on language
             updateManifest();
             
+            // Initialize theme (updated)
+            console.log('🎨 Initializing theme...');
+            initializeTheme();
+            
             // Restore calendar state
             if (currentCalendar === 'persian') {
                 currentPersianDate = gregorianToPersian(currentDate);
@@ -44,12 +48,6 @@ function initializeApp() {
                 currentDate = persianToGregorian(currentPersianDate);
             }
             
-            // Restore theme
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-
             // Setup all functionality
             console.log('⚙️ Setting up functionality...');
             setupEventListeners();
@@ -177,6 +175,170 @@ function loadComponent(id, url) {
         });
 }
 
+// ======================= THEME MANAGEMENT =======================
+/**
+ * Initializes theme based on system preference and saved settings
+ */
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'default';
+        console.log('Theme select:', savedTheme);
+
+    // If the value is invalid, set the default
+    if (!['default', 'light', 'dark'].includes(savedTheme)) {
+        localStorage.setItem('theme', 'default');
+    }
+    
+    // Apply saved theme
+    applyTheme(savedTheme);
+    
+    // Make sure the selectbox is updated too
+    if (themeSelect) {
+        themeSelect.value = savedTheme;
+        updateThemeSelect(savedTheme);
+    }
+    
+    // Listen for system theme changes
+    if (window.matchMedia) {
+        const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+        systemThemeMedia.addEventListener('change', handleSystemThemeChange);
+        
+        // Check once at the beginning
+        handleSystemThemeChange(systemThemeMedia);        
+    }
+}
+
+/**
+ * Applies theme to the document
+ * @param {string} theme - Theme name ('default', 'light', 'dark')
+ */
+function applyTheme(theme) {
+    console.log('Applying theme:', theme);
+    
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.removeAttribute('data-theme-mode');
+    document.documentElement.classList.remove('theme-light', 'theme-dark', 'theme-default');
+    
+    if (theme === 'default') {
+        const systemTheme = getSystemTheme();
+        document.documentElement.setAttribute('data-theme', systemTheme);
+        document.documentElement.setAttribute('data-theme-mode', 'auto');
+        document.documentElement.classList.add('theme-default');
+    } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-theme-mode', 'manual');
+        document.documentElement.classList.add(`theme-${theme}`);
+    }
+    
+    if (themeSelect) {
+        themeSelect.value = theme;
+    }
+    
+    updateThemeSelect(theme); 
+}
+
+/**
+ * Gets system theme preference
+ * @returns {string} System theme ('light' or 'dark')
+ */
+function getSystemTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+    }
+    return 'light';
+}
+
+/**
+ * Handles system theme changes
+ * @param {MediaQueryListEvent} e - Media query event
+ */
+function handleSystemThemeChange(e) {
+    const currentTheme = localStorage.getItem('theme') || 'default';
+    
+    // Only update if theme is set to 'default'
+    if (currentTheme === 'default') {
+        const newTheme = e.matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+    }
+}
+
+/**
+ * Updates theme select appearance
+ * @param {string} theme - Current theme
+ */
+function updateThemeSelect(theme) {
+    if (!themeSelect) {
+        console.warn('Theme select element not found');
+        themeSelect = document.getElementById('themeSelect');
+        if (!themeSelect) return;
+    }
+    
+    themeSelect.value = theme;
+    
+    const options = themeSelect.querySelectorAll('option');
+    options.forEach(option => {
+        const value = option.value;
+        if (value === 'default') {
+            option.textContent = langData.ui.themeDefault || 'پیش‌فرض سیستم';
+        } else if (value === 'light') {
+            option.textContent = langData.ui.light || 'روشن';
+        } else if (value === 'dark') {
+            option.textContent = langData.ui.dark || 'تیره';
+        }
+    });
+}
+
+/**
+ * Toggles between themes
+ */
+function toggleTheme() {
+    const currentTheme = localStorage.getItem('theme') || 'default';
+    let newTheme;
+    
+    // Cycle through themes: default -> light -> dark -> default
+    if (currentTheme === 'default') {
+        newTheme = 'light';
+    } else if (currentTheme === 'light') {
+        newTheme = 'dark';
+    } else {
+        newTheme = 'default';
+    }
+    
+    // Apply new theme and save
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Show feedback
+    showThemeChangeToast(newTheme);
+}
+
+/**
+ * Shows toast notification for theme change
+ * @param {string} theme - New theme name
+ */
+function showThemeChangeToast(theme) {
+    let message;
+    
+    if (theme === 'default') {
+        message = langData.ui.themeSetToDefault || 'تم روی پیش‌فرض سیستم تنظیم شد';
+    } else if (theme === 'light') {
+        message = langData.ui.themeSetToLight || 'تم روشن فعال شد';
+    } else {
+        message = langData.ui.themeSetToDark || 'تم تاریک فعال شد';
+    }
+    
+    showToast(message);
+}
+
+/**
+ * Handles theme change from settings dropdown
+ */
+function handleThemeChange() {
+    const theme = themeSelect.value;
+    applyTheme(theme);
+    localStorage.setItem('theme', theme);
+    showThemeChangeToast(theme);
+}
+
 // ======================= PAGE NAVIGATION =======================
 /**
  * Navigates between pages
@@ -255,7 +417,7 @@ async function navigateTo(page) {
 function setupSettingsPage() {
     console.log('⚙️ Setting up settings page...');
     
-    if (themeSelect) themeSelect.value = localStorage.getItem('theme') || 'light';
+    if (themeSelect) themeSelect.value = localStorage.getItem('theme') || 'default';
     if (langSelect) langSelect.value = currentLang;
     if (calendarTypeSelect) calendarTypeSelect.value = currentCalendar;
     if (secondaryCalendarToggle) secondaryCalendarToggle.checked = showSecondaryCalendar;
@@ -1086,6 +1248,7 @@ function resetSettings() {
         currentCalendar = 'persian';
         showSecondaryCalendar = true;
         events = {};
+        if (themeSelect) themeSelect.value = 'default';
         
         document.documentElement.removeAttribute('data-theme');
         document.documentElement.setAttribute('lang', 'fa');
@@ -1211,6 +1374,8 @@ function setupNavigation() {
             } else if (linkText.includes('about') || linkText.includes('درباره')) {
                 navigateTo('about');
             }
+            
+            // Menu will be closed automatically by the MobileMenu class
         }
         
         const footerLink = e.target.closest('.footer-links a, .moreInfoLinks a');
@@ -1315,6 +1480,9 @@ class MobileMenu {
             this.navOverlay.addEventListener('click', () => this.closeMenu());
         }
         
+        // Close menu when clicking on nav links
+        this.setupNavLinks();
+
         // Close menu on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) {
@@ -1329,6 +1497,15 @@ class MobileMenu {
             }
         });
     }
+    
+    setupNavLinks() {
+        const navLinks = this.navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                this.closeMenuWithAnimation();
+            });
+        });
+    }    
     
     toggleMenu() {
         if (this.isOpen) {
@@ -1355,6 +1532,17 @@ class MobileMenu {
         this.menuBtn.setAttribute('aria-expanded', 'false');
         this.menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
         this.isOpen = false;
+    }
+    
+    closeMenuWithAnimation() {
+        // Add closing animation class
+        this.navMenu.classList.add('closing');
+        
+        // Wait for animation to complete before fully closing
+        setTimeout(() => {
+            this.closeMenu();
+            this.navMenu.classList.remove('closing');
+        }, 300); // Match this with CSS transition duration
     }
     
     trapFocus() {
@@ -2354,8 +2542,9 @@ function updateSettingsText() {
     if (resetSettings) resetSettings.textContent = langData.ui.resetSettings || 'Reset Settings';
 
     if (themeSelect) {
-        if (themeSelect.options[0]) themeSelect.options[0].text = langData.ui.light || 'Light';
-        if (themeSelect.options[1]) themeSelect.options[1].text = langData.ui.dark || 'Dark';
+        if (themeSelect.options[0]) themeSelect.options[0].text = langData.ui.themeDefault || 'System Default';        
+        if (themeSelect.options[1]) themeSelect.options[1].text = langData.ui.light || 'Light';
+        if (themeSelect.options[2]) themeSelect.options[2].text = langData.ui.dark || 'Dark';
     }
     
     if (langSelect) {
@@ -2408,20 +2597,6 @@ function setupSettingsHandlers() {
     if (langSelect) langSelect.addEventListener('change', handleLanguageChange);
     if (calendarTypeSelect) calendarTypeSelect.addEventListener('change', handleCalendarTypeChange);
     if (secondaryCalendarToggle) secondaryCalendarToggle.addEventListener('change', handleSecondaryCalendarToggle);
-}
-
-/**
- * Handles theme change from settings
- */
-function handleThemeChange() {
-    const theme = themeSelect.value;
-    if (theme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-        document.documentElement.removeAttribute('data-theme');
-    }
-    localStorage.setItem('theme', theme);
-    showToast(langData.ui.settingsSaved || 'تنظیمات ذخیره شد');
 }
 
 /**
@@ -2533,20 +2708,6 @@ function registerServiceWorker() {
 }
 
 // ======================= UI HELPER FUNCTIONS =======================
-/**
- * Toggles between light and dark themes
- */
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    if (currentTheme === 'dark') {
-        document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-    } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-    }
-}
-
 /**
  * Toggles between Persian and English languages
  */
