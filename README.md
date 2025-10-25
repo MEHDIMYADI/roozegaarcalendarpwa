@@ -1,6 +1,6 @@
 # Roozegaar Calendar | تقویم روزگار
 
-<a href="https://dimyadi.ir/roozegaar-calendar" target="_blank">Roozegaar Calendar PWA Live</a>
+<a href="https://roozegaar.github.io/calendar" target="_blank">Roozegaar Calendar PWA Live</a>
 
 ---
 
